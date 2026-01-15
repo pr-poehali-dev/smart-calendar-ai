@@ -13,7 +13,11 @@ type Document = {
   emoji: string;
 };
 
-const DocsSection = () => {
+type DocsSectionProps = {
+  onDocClick: (doc: Document) => void;
+};
+
+const DocsSection = ({ onDocClick }: DocsSectionProps) => {
   const docs: Document[] = [
     { id: '1', title: 'Техническое задание', folder: 'Проекты', lastEdited: '2 часа назад', editedBy: 'АС', emoji: '📋' },
     { id: '2', title: 'База знаний команды', folder: 'Общее', lastEdited: '1 день назад', editedBy: 'МП', emoji: '📚' },
@@ -61,6 +65,7 @@ const DocsSection = () => {
             {docs.map((doc) => (
               <div
                 key={doc.id}
+                onClick={() => onDocClick(doc)}
                 className="p-4 rounded-lg border border-border hover:border-primary cursor-pointer transition-all hover-scale bg-muted/30"
               >
                 <div className="flex items-center justify-between">

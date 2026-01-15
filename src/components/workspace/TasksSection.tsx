@@ -17,7 +17,11 @@ type Task = {
   attachments: number;
 };
 
-const TasksSection = () => {
+type TasksSectionProps = {
+  onTaskClick: (task: Task) => void;
+};
+
+const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
   const [view, setView] = useState<'board' | 'list' | 'calendar' | 'gantt'>('board');
   
   const tasks: Task[] = [
@@ -123,7 +127,7 @@ const TasksSection = () => {
                 {tasks
                   .filter((task) => task.status === column.id)
                   .map((task) => (
-                    <Card key={task.id} className="p-4 hover:border-primary cursor-pointer transition-all hover-scale bg-card border-border">
+                    <Card key={task.id} onClick={() => onTaskClick(task)} className="p-4 hover:border-primary cursor-pointer transition-all hover-scale bg-card border-border">
                       <div className="space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <p className="font-medium text-sm leading-tight">{task.title}</p>

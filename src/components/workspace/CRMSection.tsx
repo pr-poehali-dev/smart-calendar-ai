@@ -15,7 +15,11 @@ type Deal = {
   dueDate: string;
 };
 
-const CRMSection = () => {
+type CRMSectionProps = {
+  onDealClick: (deal: Deal) => void;
+};
+
+const CRMSection = ({ onDealClick }: CRMSectionProps) => {
   const deals: Deal[] = [
     {
       id: '1',
@@ -118,7 +122,7 @@ const CRMSection = () => {
               {deals
                 .filter((deal) => deal.stage === stage.id)
                 .map((deal) => (
-                  <Card key={deal.id} className="p-4 hover:border-primary cursor-pointer transition-all hover-scale bg-card border-border">
+                  <Card key={deal.id} onClick={() => onDealClick(deal)} className="p-4 hover:border-primary cursor-pointer transition-all hover-scale bg-card border-border">
                     <div className="space-y-3">
                       <div>
                         <h4 className="font-medium text-sm">{deal.title}</h4>
