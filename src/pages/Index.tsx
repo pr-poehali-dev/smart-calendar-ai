@@ -6,6 +6,10 @@ import CalendarView from '@/components/CalendarView';
 import TasksView from '@/components/TasksView';
 import MeetingsView from '@/components/MeetingsView';
 import TeamAnalyticsView from '@/components/TeamAnalyticsView';
+import SettingsDialog from '@/components/SettingsDialog';
+import AIAssistant from '@/components/AIAssistant';
+import ImportantDatesView from '@/components/ImportantDatesView';
+import NotesView from '@/components/NotesView';
 
 type Task = {
   id: string;
@@ -32,7 +36,9 @@ type Meeting = {
 };
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'team' | 'meetings' | 'analytics'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'tasks' | 'team' | 'meetings' | 'analytics' | 'dates' | 'notes'>('calendar');
+  const [productivity, setProductivity] = useState(87);
+  const [tasksCompleted, setTasksCompleted] = useState(24);
   const [tasks, setTasks] = useState<Task[]>([
     { id: '1', title: 'Подготовить презентацию для клиента', priority: 'high', deadline: '2026-01-18', status: 'in-progress' },
     { id: '2', title: 'Проверить код новой фичи', priority: 'medium', deadline: '2026-01-20', status: 'pending' },
@@ -119,18 +125,23 @@ const Index = () => {
               </h1>
               <p className="text-muted-foreground mt-2">Умный планировщик с ИИ-ассистентом</p>
             </div>
-            <Button className="gradient-purple text-white hover-scale">
-              <Icon name="Plus" size={20} className="mr-2" />
-              Создать событие
-            </Button>
+            <div className="flex gap-2">
+              <SettingsDialog onThemeChange={(theme) => console.log('Theme changed:', theme)} />
+              <Button className="gradient-purple text-white hover-scale">
+                <Icon name="Plus" size={20} className="mr-2" />
+                Создать событие
+              </Button>
+            </div>
           </div>
 
           <div className="flex gap-2 overflow-x-auto pb-2">
             {[
               { id: 'calendar', label: 'Календарь', icon: 'Calendar' },
               { id: 'tasks', label: 'Задачи', icon: 'CheckSquare' },
-              { id: 'team', label: 'Команда', icon: 'Users' },
               { id: 'meetings', label: 'Встречи', icon: 'Video' },
+              { id: 'dates', label: 'Важные даты', icon: 'Cake' },
+              { id: 'notes', label: 'Заметки', icon: 'StickyNote' },
+              { id: 'team', label: 'Команда', icon: 'Users' },
               { id: 'analytics', label: 'Аналитика', icon: 'BarChart3' },
             ].map((tab) => (
               <Button
@@ -147,6 +158,8 @@ const Index = () => {
             ))}
           </div>
         </header>
+
+        <AIAssistant productivity={productivity} tasksCompleted={tasksCompleted} />
 
         {activeTab === 'calendar' && <CalendarView meetings={meetings} />}
 
@@ -165,6 +178,10 @@ const Index = () => {
         {activeTab === 'team' && <TeamAnalyticsView teamMembers={teamMembers} viewType="team" />}
 
         {activeTab === 'analytics' && <TeamAnalyticsView teamMembers={teamMembers} viewType="analytics" />}
+
+        {activeTab === 'dates' && <ImportantDatesView />}
+
+        {activeTab === 'notes' && <NotesView />}
       </div>
     </div>
   );
