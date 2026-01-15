@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Icon from '@/components/ui/icon';
+import TaskCalendar from './TaskCalendar';
+import CreateTaskDialog from './CreateTaskDialog';
+import { toast } from 'sonner';
 
 type Task = {
   id: string;
@@ -23,6 +26,55 @@ type TasksSectionProps = {
 
 const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
   const [view, setView] = useState<'board' | 'list' | 'calendar' | 'gantt'>('board');
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [calendarTasks, setCalendarTasks] = useState<any[]>([
+    {
+      id: '1',
+      title: 'Позвонить клиенту',
+      date: '2026-01-16',
+      time: '16:00',
+      type: 'work',
+      assignee: 'МП',
+      status: 'pending',
+      createdBy: 'ЮР',
+    },
+    {
+      id: '2',
+      title: 'Встреча с командой',
+      date: '2026-01-17',
+      time: '10:00',
+      type: 'work',
+      assignee: 'ЮР',
+      status: 'pending',
+      createdBy: 'АС',
+    },
+  ]);
+
+  const handleCreateTask = (date: string) => {
+    setSelectedDate(date);
+    setCreateDialogOpen(true);
+  };
+
+  const handleTaskCreate = (task: any) => {
+    setCalendarTasks([...calendarTasks, task]);
+  };
+
+  const handleTaskComplete = (taskId: string, comment: string) => {
+    setCalendarTasks(
+      calendarTasks.map((task) =>
+        task.id === taskId ? { ...task, status: 'completed', comment } : task
+      )
+    );
+    
+    const task = calendarTasks.find((t) => t.id === taskId);
+    if (task && task.createdBy !== 'ЮР') {
+      toast.success(
+        `${task.createdBy} получил уведомление о выполнении задачи "${task.title}"`,
+        { duration: 5000 }
+      );
+    }
+  };
   
   const tasks: Task[] = [
     {
@@ -109,6 +161,22 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
           </Button>
         </div>
       </div>
+
+      {view === 'calendar' && (
+        <>
+          <TaskCalendar
+            onCreateTask={handleCreateTask}
+            tasks={calendarTasks}
+            onTaskComplete={handleTaskComplete}
+          />
+          <CreateTaskDialog
+            open={createDialogOpen}
+            onClose={() => setCreateDialogOpen(false)}
+            date={selectedDate}
+            onTaskCreate={handleTaskCreate}
+          />
+        </>
+      )}
 
       {view === 'board' && (
         <div className="grid grid-cols-3 gap-4">

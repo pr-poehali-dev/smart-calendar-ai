@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import NotificationPanel from './NotificationPanel';
 
 type HeaderProps = {
   workspace: string;
@@ -41,12 +41,7 @@ const Header = ({ workspace, onCreateClick }: HeaderProps) => {
             Создать
           </Button>
           
-          <Button variant="ghost" size="icon" className="relative">
-            <Icon name="Bell" size={20} />
-            <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
-              3
-            </Badge>
-          </Button>
+          <NotificationPanel />
 
           <Avatar className="cursor-pointer hover-scale">
             <AvatarFallback className="gradient-blue text-white">ЮР</AvatarFallback>
