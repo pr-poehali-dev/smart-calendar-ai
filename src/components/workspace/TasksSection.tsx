@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,10 @@ type TasksSectionProps = {
 };
 
 const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
-  const [view, setView] = useState<'board' | 'list' | 'calendar' | 'gantt'>('board');
+  const [view, setView] = useState<'board' | 'list' | 'calendar' | 'stats'>(() => {
+    const saved = localStorage.getItem('tasksView');
+    return (saved as 'board' | 'list' | 'calendar' | 'stats') || 'board';
+  });
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [calendarTasks, setCalendarTasks] = useState<any[]>([
@@ -59,6 +62,10 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
   const handleTaskCreate = (task: any) => {
     setCalendarTasks([...calendarTasks, task]);
   };
+
+  useEffect(() => {
+    localStorage.setItem('tasksView', view);
+  }, [view]);
 
   const handleTaskComplete = (taskId: string, comment: string) => {
     setCalendarTasks(
@@ -155,9 +162,9 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
             <Icon name="Calendar" size={16} className="mr-2" />
             Календарь
           </Button>
-          <Button variant={view === 'gantt' ? 'default' : 'ghost'} size="sm" onClick={() => setView('gantt')}>
+          <Button variant={view === 'stats' ? 'default' : 'ghost'} size="sm" onClick={() => setView('stats')}>
             <Icon name="BarChart2" size={16} className="mr-2" />
-            Гант
+            Статистика
           </Button>
         </div>
       </div>
@@ -252,6 +259,49 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
             </div>
           ))}
         </div>
+      )}
+
+      {view === 'stats' && (
+        <Card className="p-6 bg-card border-border">
+          <h3 className="text-lg font-semibold mb-4">Статистика задач по дням</h3>
+          <div className="space-y-4">
+            {Array.from({ length: 7 }, (_, i) => {
+              const date = new Date('2026-01-15');
+              date.setDate(date.getDate() + i);
+              const dateStr = date.toISOString().split('T')[0];
+              
+              const dayTasks = calendarTasks.filter((t) => t.date === dateStr);
+              const total = dayTasks.length;
+              const completed = dayTasks.filter((t) => t.status === 'completed').length;
+              const pending = dayTasks.filter((t) => t.status === 'pending').length;
+              const postponed = 0;
+              
+              return (
+                <div key={dateStr} className="p-4 rounded-lg bg-muted/50 border border-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">
+                      {date.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' })}
+                    </span>
+                    <span className="text-sm text-muted-foreground">Всего: {total}</span>
+                  </div>
+                  <div className="flex gap-4 text-sm">
+                    <span className="text-green-400">✓ Выполнено: {completed}</span>
+                    <span className="text-yellow-400">⏳ Не выполнено: {pending}</span>
+                    <span className="text-blue-400">📅 Перенесено: {postponed}</span>
+                  </div>
+                  {total > 0 && (
+                    <div className="mt-2 h-2 bg-background rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-green-500"
+                        style={{ width: `${(completed / total) * 100}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       )}
     </div>
   );

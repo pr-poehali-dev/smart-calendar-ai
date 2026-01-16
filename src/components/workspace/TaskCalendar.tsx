@@ -96,17 +96,20 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps
                     {day}
                   </div>
                   <div className="space-y-1">
-                    {dayTasks.slice(0, 2).map((task) => (
-                      <div
-                        key={task.id}
-                        className={`text-xs p-1 rounded border ${getTypeColor(task.type)} truncate`}
-                      >
-                        {task.time} {task.title}
-                      </div>
-                    ))}
-                    {dayTasks.length > 2 && (
+                    {dayTasks
+                      .sort((a, b) => a.time.localeCompare(b.time))
+                      .slice(0, 3)
+                      .map((task) => (
+                        <div
+                          key={task.id}
+                          className={`text-xs p-1 rounded border ${getTypeColor(task.type)} truncate`}
+                        >
+                          {task.time} {task.title}
+                        </div>
+                      ))}
+                    {dayTasks.length > 3 && (
                       <div className="text-xs text-muted-foreground">
-                        +{dayTasks.length - 2} ещё
+                        +{dayTasks.length - 3} ещё
                       </div>
                     )}
                   </div>
@@ -148,16 +151,20 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps
                     <td key={day} className="p-1">
                       <div
                         onClick={() => handleDateClick(dayNum)}
-                        className="h-12 rounded border border-border hover:border-primary cursor-pointer transition-all relative"
+                        className="min-h-12 rounded border border-border hover:border-primary cursor-pointer transition-all"
                       >
-                        {tasksAtTime.map((task) => (
-                          <div
-                            key={task.id}
-                            className={`absolute inset-0 p-1 text-xs rounded border ${getTypeColor(task.type)} truncate`}
-                          >
-                            {task.title}
-                          </div>
-                        ))}
+                        <div className="space-y-0.5 p-1">
+                          {tasksAtTime
+                            .sort((a, b) => a.time.localeCompare(b.time))
+                            .map((task) => (
+                              <div
+                                key={task.id}
+                                className={`p-1 text-xs rounded border ${getTypeColor(task.type)} truncate`}
+                              >
+                                {task.title}
+                              </div>
+                            ))}
+                        </div>
                       </div>
                     </td>
                   );
@@ -177,7 +184,9 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps
     return (
       <div className="space-y-2">
         {timeSlots.map((time) => {
-          const tasksAtTime = dayTasks.filter((t) => t.time.startsWith(time.split(':')[0]));
+          const tasksAtTime = dayTasks
+            .filter((t) => t.time.startsWith(time.split(':')[0]))
+            .sort((a, b) => a.time.localeCompare(b.time));
           
           return (
             <div key={time} className="flex gap-4">
