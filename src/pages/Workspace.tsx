@@ -30,8 +30,22 @@ const Workspace = () => {
     };
   }, []);
 
-  const handleCreate = () => {
-    toast.success('Открыто окно создания');
+  const handleCreate = (type: 'task' | 'note' | 'deal' | 'event') => {
+    const labels: Record<string, string> = {
+      task: 'Задача',
+      note: 'Заметка',
+      deal: 'Сделка',
+      event: 'Событие',
+    };
+    toast.success(`Создание: ${labels[type]}`);
+    
+    if (type === 'note') {
+      setActiveSection('notes');
+    } else if (type === 'task') {
+      setActiveSection('tasks');
+    } else if (type === 'deal') {
+      setActiveSection('crm');
+    }
   };
 
   const handleTaskClick = (task: any) => {

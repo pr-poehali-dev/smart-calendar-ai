@@ -26,6 +26,9 @@ const NotesSection = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [noteTitle, setNoteTitle] = useState('');
+  const [noteContent, setNoteContent] = useState('');
 
   const [notes, setNotes] = useState<Note[]>([
     {
@@ -71,7 +74,54 @@ const NotesSection = () => {
 
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
+    setNoteTitle(note.title);
+    setNoteContent(note.content);
     setDialogOpen(true);
+  };
+
+  const handleCreateNew = () => {
+    setSelectedNote(null);
+    setNoteTitle('');
+    setNoteContent('');
+    setDialogOpen(true);
+  };
+
+  const startVoiceRecording = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Ваш браузер не поддерживает голосовой ввод');
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ru-RU';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join(' ');
+      setNoteContent((prev) => prev + (prev ? '\n' : '') + transcript);
+    };
+
+    recognition.onerror = () => {
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognition.start();
+
+    setTimeout(() => {
+      recognition.stop();
+    }, 10000);
   };
 
   const handlePinToggle = (noteId: string) => {
@@ -112,7 +162,7 @@ const NotesSection = () => {
             <Icon name="List" size={16} className="mr-2" />
             Список
           </Button>
-          <Button className="gradient-purple text-white" onClick={() => setDialogOpen(true)}>
+          <Button className="gradient-purple text-white" onClick={handleCreateNew}>
             <Icon name="Plus" size={16} className="mr-2" />
             Новая заметка
           </Button>
@@ -210,12 +260,30 @@ const NotesSection = () => {
             <DialogTitle>{selectedNote ? 'Редактировать заметку' : 'Новая заметка'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <Input placeholder="Заголовок заметки" />
-            <textarea
-              placeholder="Содержимое заметки..."
-              className="w-full h-64 p-3 rounded-lg border border-border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
-              defaultValue={selectedNote?.content}
+            <Input
+              placeholder="Заголовок заметки"
+              value={noteTitle}
+              onChange={(e) => setNoteTitle(e.target.value)}
             />
+            <div className="relative">
+              <textarea
+                placeholder="Содержимое заметки..."
+                className="w-full h-64 p-3 rounded-lg border border-border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`absolute bottom-2 right-2 ${
+                  isRecording ? 'bg-red-500/20 text-red-400 animate-pulse' : ''
+                }`}
+                onClick={startVoiceRecording}
+                disabled={isRecording}
+              >
+                <Icon name="Mic" size={18} />
+              </Button>
+            </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Цвет:</span>
               {colors.map((color) => (
