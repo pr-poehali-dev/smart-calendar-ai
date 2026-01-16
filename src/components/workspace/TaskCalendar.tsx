@@ -389,6 +389,35 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete, onTaskMove }: TaskC
         {view === 'day' && renderDayView()}
       </Card>
 
+      <Card className="p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/30 mt-4">
+        <div className="flex items-start gap-3">
+          <div className="bg-purple-500/20 p-2 rounded-lg">
+            <Icon name="Sparkles" size={20} className="text-purple-400" />
+          </div>
+          <div className="flex-1">
+            <h4 className="font-semibold text-sm mb-2">💡 Рекомендации от ИИ</h4>
+            <ul className="space-y-1.5 text-sm text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-purple-400 mt-0.5">•</span>
+                <span>У вас 3 задачи на завтра — рекомендую начать с "Позвонить клиенту" в 16:00</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-400 mt-0.5">•</span>
+                <span>Встреча с командой в 10:00 может пересечься с другой задачей — перенести на 11:00?</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-purple-400 mt-0.5">•</span>
+                <span>Максим Петров выполнил 5 задач на этой неделе — отличная работа! 🎉</span>
+              </li>
+            </ul>
+            <Button size="sm" variant="ghost" className="mt-3 text-purple-400 hover:text-purple-300">
+              Показать больше рекомендаций
+              <Icon name="ChevronRight" size={14} className="ml-1" />
+            </Button>
+          </div>
+        </div>
+      </Card>
+
       {renderDayDialog()}
     </div>
   );

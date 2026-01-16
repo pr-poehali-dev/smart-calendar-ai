@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/workspace/Header';
 import Sidebar from '@/components/workspace/Sidebar';
 import TasksSection from '@/components/workspace/TasksSection';
-import DocsSection from '@/components/workspace/DocsSection';
+import NotesSection from '@/components/workspace/NotesSection';
 import CRMSection from '@/components/workspace/CRMSection';
 import TimeSection from '@/components/workspace/TimeSection';
 import AnalyticsSection from '@/components/workspace/AnalyticsSection';
@@ -12,6 +12,23 @@ import { toast } from 'sonner';
 const Workspace = () => {
   const [activeSection, setActiveSection] = useState('tasks');
   const [detailPanel, setDetailPanel] = useState<{ type: 'task' | 'deal' | 'doc' | null; data: any }>({ type: null, data: null });
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved === 'true';
+  });
+
+  useEffect(() => {
+    const handleStorage = () => {
+      const saved = localStorage.getItem('sidebarCollapsed');
+      setSidebarCollapsed(saved === 'true');
+    };
+    window.addEventListener('storage', handleStorage);
+    const interval = setInterval(handleStorage, 100);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleCreate = () => {
     toast.success('Открыто окно создания');
@@ -37,8 +54,8 @@ const Workspace = () => {
     switch (activeSection) {
       case 'tasks':
         return <TasksSection onTaskClick={handleTaskClick} />;
-      case 'docs':
-        return <DocsSection onDocClick={handleDocClick} />;
+      case 'notes':
+        return <NotesSection />;
       case 'crm':
         return <CRMSection onDealClick={handleDealClick} />;
       case 'time':
@@ -62,7 +79,7 @@ const Workspace = () => {
       <Header workspace="Моё пространство" onCreateClick={handleCreate} />
       <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
       
-      <main className={`ml-64 mt-16 p-6 transition-all ${detailPanel.type ? 'mr-96' : 'mr-0'}`}>
+      <main className={`${sidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 transition-all ${detailPanel.type ? 'mr-96' : 'mr-0'}`}>
         <div className="animate-fade-in">{renderSection()}</div>
       </main>
 
