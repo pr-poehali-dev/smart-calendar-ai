@@ -110,6 +110,7 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete, onTaskMove }: TaskC
               }}
               className={`min-h-24 p-2 rounded-lg border transition-all cursor-pointer ${
                 draggedTask && isCurrentMonth ? 'ring-2 ring-purple-500' : ''
+              } ${
                 isCurrentMonth
                   ? 'border-border hover:border-primary bg-card'
                   : 'border-transparent bg-muted/30'
