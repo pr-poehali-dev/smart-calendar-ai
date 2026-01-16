@@ -1,0 +1,59 @@
+{
+  "name": "SmartPlan AI",
+  "short_name": "SmartPlan",
+  "description": "Умный помощник для задач, заметок и календаря",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn.poehali.dev/projects/9ef8b546-a09e-466a-a5a5-c11985624c4a/files/favicon-1768479703010.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn.poehali.dev/projects/9ef8b546-a09e-466a-a5a5-c11985624c4a/files/favicon-1768479703010.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Новая задача",
+      "short_name": "Задача",
+      "description": "Создать новую задачу",
+      "url": "/?action=new-task",
+      "icons": [
+        {
+          "src": "https://cdn.poehali.dev/projects/9ef8b546-a09e-466a-a5a5-c11985624c4a/files/favicon-1768479703010.jpg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Новая заметка",
+      "short_name": "Заметка",
+      "description": "Создать новую заметку",
+      "url": "/?action=new-note",
+      "icons": [
+        {
+          "src": "https://cdn.poehali.dev/projects/9ef8b546-a09e-466a-a5a5-c11985624c4a/files/favicon-1768479703010.jpg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://cdn.poehali.dev/projects/9ef8b546-a09e-466a-a5a5-c11985624c4a/files/favicon-1768479703010.jpg",
+      "sizes": "540x720",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

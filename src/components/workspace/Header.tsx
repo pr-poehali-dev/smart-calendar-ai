@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import NotificationPanel from './NotificationPanel';
+import { useInstallPrompt } from '@/hooks/useInstallPrompt';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +20,28 @@ type HeaderProps = {
 
 const Header = ({ workspace, onCreateClick }: HeaderProps) => {
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
+  const { isInstallable, promptInstall } = useInstallPrompt();
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem('installBannerDismissed');
+    if (isInstallable && !dismissed) {
+      setShowInstallBanner(true);
+    }
+  }, [isInstallable]);
+
+  const handleInstall = async () => {
+    const installed = await promptInstall();
+    if (installed) {
+      toast.success('Приложение установлено!');
+      setShowInstallBanner(false);
+    }
+  };
+
+  const dismissBanner = () => {
+    localStorage.setItem('installBannerDismissed', 'true');
+    setShowInstallBanner(false);
+  };
 
   const createOptions = [
     { id: 'task', label: 'Задачу', icon: 'CheckSquare', color: 'text-blue-400' },
@@ -52,6 +76,17 @@ const Header = ({ workspace, onCreateClick }: HeaderProps) => {
         </div>
 
         <div className="flex items-center gap-2">
+          {isInstallable && showInstallBanner && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleInstall}
+              className="hidden md:flex"
+            >
+              <Icon name="Download" size={16} className="mr-2" />
+              Установить
+            </Button>
+          )}
           <DropdownMenu open={createMenuOpen} onOpenChange={setCreateMenuOpen}>
             <DropdownMenuTrigger asChild>
               <Button className="gradient-purple text-white hover-scale">
