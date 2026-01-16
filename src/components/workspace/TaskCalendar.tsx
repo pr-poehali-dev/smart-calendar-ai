@@ -1,4 +1,10 @@
 import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,11 +27,15 @@ type TaskCalendarProps = {
   onCreateTask: (date: string) => void;
   tasks: CalendarTask[];
   onTaskComplete: (taskId: string, comment: string) => void;
+  onTaskMove: (taskId: string, newDate: string) => void;
 };
 
-const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps) => {
+const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete, onTaskMove }: TaskCalendarProps) => {
   const [view, setView] = useState<'day' | 'week' | 'month'>('month');
   const [selectedDate, setSelectedDate] = useState(new Date('2026-01-15'));
+  const [draggedTask, setDraggedTask] = useState<string | null>(null);
+  const [dayDialogOpen, setDayDialogOpen] = useState(false);
+  const [dayDialogDate, setDayDialogDate] = useState<number | null>(null);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -84,7 +94,22 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps
             <div
               key={idx}
               onClick={() => handleDateClick(day)}
+              onDragOver={(e) => {
+                if (isCurrentMonth && draggedTask) {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                }
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (draggedTask && isCurrentMonth) {
+                  const newDate = `2026-01-${String(day).padStart(2, '0')}`;
+                  onTaskMove(draggedTask, newDate);
+                  setDraggedTask(null);
+                }
+              }}
               className={`min-h-24 p-2 rounded-lg border transition-all cursor-pointer ${
+                draggedTask && isCurrentMonth ? 'ring-2 ring-purple-500' : ''
                 isCurrentMonth
                   ? 'border-border hover:border-primary bg-card'
                   : 'border-transparent bg-muted/30'
@@ -102,13 +127,26 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps
                       .map((task) => (
                         <div
                           key={task.id}
-                          className={`text-xs p-1 rounded border ${getTypeColor(task.type)} truncate`}
+                          draggable
+                          onDragStart={(e) => {
+                            setDraggedTask(task.id);
+                            e.dataTransfer.effectAllowed = 'move';
+                          }}
+                          onDragEnd={() => setDraggedTask(null)}
+                          className={`text-xs p-1 rounded border ${getTypeColor(task.type)} truncate cursor-move hover:opacity-80`}
                         >
                           {task.time} {task.title}
                         </div>
                       ))}
                     {dayTasks.length > 3 && (
-                      <div className="text-xs text-muted-foreground">
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDayDialogDate(day);
+                          setDayDialogOpen(true);
+                        }}
+                        className="text-xs text-blue-400 cursor-pointer hover:underline"
+                      >
                         +{dayTasks.length - 3} ещё
                       </div>
                     )}
@@ -119,6 +157,60 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps
           );
         })}
       </div>
+    );
+  };
+
+  const renderDayDialog = () => {
+    if (!dayDialogDate) return null;
+    const dayTasks = getTasksForDate(dayDialogDate).sort((a, b) => a.time.localeCompare(b.time));
+
+    return (
+      <Dialog open={dayDialogOpen} onOpenChange={setDayDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Задачи на {dayDialogDate} января 2026
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {dayTasks.map((task) => (
+              <Card key={task.id} className={`p-3 border ${getTypeColor(task.type)}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{task.time}</span>
+                      <span className="text-sm">{task.title}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Ответственный: {task.assignee}
+                    </p>
+                  </div>
+                  {task.status === 'pending' && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        const comment = prompt('Добавить комментарий:');
+                        if (comment !== null) {
+                          onTaskComplete(task.id, comment);
+                          setDayDialogOpen(false);
+                        }
+                      }}
+                    >
+                      <Icon name="Check" size={14} />
+                    </Button>
+                  )}
+                  {task.status === 'completed' && (
+                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                      <Icon name="CheckCircle" size={14} />
+                    </Badge>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     );
   };
 
@@ -295,6 +387,8 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete }: TaskCalendarProps
         {view === 'week' && renderWeekView()}
         {view === 'day' && renderDayView()}
       </Card>
+
+      {renderDayDialog()}
     </div>
   );
 };

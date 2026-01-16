@@ -63,6 +63,15 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
     setCalendarTasks([...calendarTasks, task]);
   };
 
+  const handleTaskMove = (taskId: string, newDate: string) => {
+    setCalendarTasks(
+      calendarTasks.map((task) =>
+        task.id === taskId ? { ...task, date: newDate } : task
+      )
+    );
+    toast.success('Задача перенесена на новую дату');
+  };
+
   useEffect(() => {
     localStorage.setItem('tasksView', view);
   }, [view]);
@@ -175,6 +184,7 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
             onCreateTask={handleCreateTask}
             tasks={calendarTasks}
             onTaskComplete={handleTaskComplete}
+            onTaskMove={handleTaskMove}
           />
           <CreateTaskDialog
             open={createDialogOpen}
@@ -183,6 +193,58 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
             onTaskCreate={handleTaskCreate}
           />
         </>
+      )}
+
+      {view === 'list' && (
+        <Card className="p-6 bg-card border-border">
+          <div className="space-y-3">
+            {[...tasks, ...calendarTasks.map(ct => ({
+              id: ct.id,
+              title: ct.title,
+              status: ct.status === 'completed' ? 'done' : 'todo',
+              priority: 'medium' as const,
+              assignee: ct.assignee,
+              dueDate: ct.date,
+              tags: [ct.type],
+              comments: 0,
+              attachments: 0,
+            }))].map((task) => (
+              <div
+                key={task.id}
+                onClick={() => onTaskClick(task)}
+                className="p-4 rounded-lg bg-muted/50 border border-border hover:border-primary cursor-pointer transition-all hover-scale"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 flex-1">
+                    <input
+                      type="checkbox"
+                      checked={task.status === 'done' || task.status === 'completed'}
+                      className="w-5 h-5 rounded border-2 border-primary"
+                      onChange={() => {}}
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium">{task.title}</p>
+                      <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Icon name="Calendar" size={14} />
+                          {new Date(task.dueDate).toLocaleDateString('ru-RU')}
+                        </span>
+                        <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
+                          {task.priority === 'high' ? 'Высокий' : task.priority === 'medium' ? 'Средний' : 'Низкий'}
+                        </Badge>
+                        <Avatar className="w-5 h-5">
+                          <AvatarFallback className="text-xs gradient-purple text-white">
+                            {task.assignee}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
       )}
 
       {view === 'board' && (
