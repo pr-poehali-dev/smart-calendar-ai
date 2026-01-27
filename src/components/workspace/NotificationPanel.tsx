@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Icon from '@/components/ui/icon';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 
 type Notification = {
   id: string;
@@ -91,6 +91,9 @@ const NotificationPanel = () => {
               <Badge className="gradient-purple text-white">{unreadCount} новых</Badge>
             )}
           </DialogTitle>
+          <DialogDescription>
+            Ваши последние уведомления о задачах и комментариях
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 mt-4">

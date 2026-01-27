@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
@@ -51,6 +51,9 @@ const SettingsDialog = ({ onThemeChange }: SettingsDialogProps) => {
             <Icon name="Palette" size={24} />
             Настройки темы
           </DialogTitle>
+          <DialogDescription>
+            Выберите цветовую схему для интерфейса
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 mt-4">
           <Label className="text-base">Выберите цветовую схему</Label>

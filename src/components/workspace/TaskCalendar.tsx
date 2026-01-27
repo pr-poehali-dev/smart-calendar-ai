@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -172,6 +173,9 @@ const TaskCalendar = ({ onCreateTask, tasks, onTaskComplete, onTaskMove }: TaskC
             <DialogTitle>
               Задачи на {dayDialogDate} января 2026
             </DialogTitle>
+            <DialogDescription>
+              Список задач на выбранную дату
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {dayTasks.map((task) => (

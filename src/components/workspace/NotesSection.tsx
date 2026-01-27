@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 
 type Note = {
@@ -258,6 +259,9 @@ const NotesSection = () => {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{selectedNote ? 'Редактировать заметку' : 'Новая заметка'}</DialogTitle>
+            <DialogDescription>
+              Создайте или отредактируйте заметку. Используйте голосовой ввод для удобства
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <Input

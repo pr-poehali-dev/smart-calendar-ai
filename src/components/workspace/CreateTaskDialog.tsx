@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -118,6 +118,9 @@ const CreateTaskDialog = ({ open, onClose, date, onTaskCreate }: CreateTaskDialo
             <Icon name="Plus" size={24} />
             Создать задачу на {new Date(date).toLocaleDateString('ru-RU')}
           </DialogTitle>
+          <DialogDescription>
+            Заполните детали задачи: название, время, тип и ответственного
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 mt-4">

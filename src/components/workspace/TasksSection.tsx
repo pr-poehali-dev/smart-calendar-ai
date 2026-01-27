@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import TaskCalendar from './TaskCalendar';
 import CreateTaskDialog from './CreateTaskDialog';
 import DayEfficiency from './DayEfficiency';
 import TaskActions from './TaskActions';
+import RescheduleDialog from './RescheduleDialog';
 import { toast } from 'sonner';
 
 type Task = {
@@ -33,6 +34,8 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
   });
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+  const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false);
+  const [taskToReschedule, setTaskToReschedule] = useState<Task | null>(null);
   const [calendarTasks, setCalendarTasks] = useState<any[]>([
     {
       id: '1',
@@ -56,43 +59,45 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
     },
   ]);
 
-  const handleCreateTask = (date: string) => {
+  const handleCreateTask = useCallback((date: string) => {
     setSelectedDate(date);
     setCreateDialogOpen(true);
-  };
+  }, []);
 
-  const handleTaskCreate = (task: any) => {
-    setCalendarTasks([...calendarTasks, task]);
-  };
+  const handleTaskCreate = useCallback((task: any) => {
+    setCalendarTasks(prev => [...prev, task]);
+  }, []);
 
-  const handleTaskMove = (taskId: string, newDate: string) => {
-    setCalendarTasks(
-      calendarTasks.map((task) =>
+  const handleTaskMove = useCallback((taskId: string, newDate: string) => {
+    setCalendarTasks(prev =>
+      prev.map((task) =>
         task.id === taskId ? { ...task, date: newDate } : task
       )
     );
     toast.success('Задача перенесена на новую дату');
-  };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('tasksView', view);
   }, [view]);
 
-  const handleTaskComplete = (taskId: string, comment: string) => {
-    setCalendarTasks(
-      calendarTasks.map((task) =>
+  const handleTaskComplete = useCallback((taskId: string, comment: string) => {
+    setCalendarTasks(prev => {
+      const updatedTasks = prev.map((task) =>
         task.id === taskId ? { ...task, status: 'completed', comment } : task
-      )
-    );
-    
-    const task = calendarTasks.find((t) => t.id === taskId);
-    if (task && task.createdBy !== 'ЮР') {
-      toast.success(
-        `${task.createdBy} получил уведомление о выполнении задачи "${task.title}"`,
-        { duration: 5000 }
       );
-    }
-  };
+      
+      const task = updatedTasks.find((t) => t.id === taskId);
+      if (task && task.createdBy !== 'ЮР') {
+        toast.success(
+          `${task.createdBy} получил уведомление о выполнении задачи "${task.title}"`,
+          { duration: 5000 }
+        );
+      }
+      
+      return updatedTasks;
+    });
+  }, []);
   
   const tasks: Task[] = [
     {
@@ -252,7 +257,8 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
                       onTaskClick(task);
                     }}
                     onReschedule={() => {
-                      toast.info('Выберите новую дату');
+                      setTaskToReschedule(task);
+                      setRescheduleDialogOpen(true);
                     }}
                     isCompleted={task.status === 'done' || task.status === 'completed'}
                   />
@@ -294,11 +300,11 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
                             toast.success('Статус задачи изменён');
                           }}
                           onEdit={() => {
-                            toast.info('Редактирование задачи');
                             onTaskClick(task);
                           }}
                           onReschedule={() => {
-                            toast.info('Выберите новую дату');
+                            setTaskToReschedule(task);
+                            setRescheduleDialogOpen(true);
                           }}
                           isCompleted={task.status === 'done'}
                         />
@@ -395,6 +401,21 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
           </div>
         </Card>
       )}
+
+      <RescheduleDialog
+        open={rescheduleDialogOpen}
+        onClose={() => {
+          setRescheduleDialogOpen(false);
+          setTaskToReschedule(null);
+        }}
+        onReschedule={(newDate) => {
+          if (taskToReschedule) {
+            toast.success(`Задача "${taskToReschedule.title}" перенесена на ${new Date(newDate).toLocaleDateString('ru-RU')}`);
+          }
+        }}
+        taskTitle={taskToReschedule?.title || ''}
+        currentDate={taskToReschedule?.dueDate || new Date().toISOString()}
+      />
     </div>
   );
 };

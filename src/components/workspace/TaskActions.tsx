@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import {
@@ -79,4 +80,4 @@ const TaskActions = ({ onComplete, onEdit, onReschedule, isCompleted = false }: 
   );
 };
 
-export default TaskActions;
+export default memo(TaskActions);
