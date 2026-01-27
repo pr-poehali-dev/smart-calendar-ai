@@ -206,14 +206,14 @@ const SettingsSection = () => {
             </div>
           </RadioGroup>
 
-          <div className="mt-4 p-4 rounded-lg bg-muted/50 border border-border">
+          <div className="mt-4 p-4 rounded-lg bg-green-500/10 border border-green-500/30">
             <div className="flex items-start gap-3">
-              <Icon name="Info" size={18} className="text-primary mt-0.5" />
+              <Icon name="Zap" size={18} className="text-green-400 mt-0.5" />
               <div className="text-sm">
-                <p className="font-medium mb-1">Совет по использованию</p>
+                <p className="font-medium mb-1 text-green-400">Мгновенное применение</p>
                 <p className="text-muted-foreground">
-                  Изменение расположения меню требует перезагрузки страницы для корректного отображения. 
-                  Настройки сохраняются автоматически.
+                  Расположение меню меняется сразу после выбора, без перезагрузки страницы. 
+                  Все настройки сохраняются автоматически.
                 </p>
               </div>
             </div>

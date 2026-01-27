@@ -18,10 +18,19 @@ const Workspace = () => {
     return saved === 'true';
   });
 
+  const [menuPosition, setMenuPosition] = useState<'top' | 'bottom' | 'left' | 'right'>(() => {
+    return (localStorage.getItem('menuPosition') as 'top' | 'bottom' | 'left' | 'right') || 'left';
+  });
+
   useEffect(() => {
     const handleStorage = () => {
       const saved = localStorage.getItem('sidebarCollapsed');
       setSidebarCollapsed(saved === 'true');
+      
+      const position = localStorage.getItem('menuPosition') as 'top' | 'bottom' | 'left' | 'right' | null;
+      if (position) {
+        setMenuPosition(position);
+      }
     };
     window.addEventListener('storage', handleStorage);
     const interval = setInterval(handleStorage, 100);
@@ -84,12 +93,37 @@ const Workspace = () => {
     }
   };
 
+  const getMainClassName = () => {
+    let classes = 'transition-all p-6';
+    
+    if (menuPosition === 'left') {
+      classes += ` ${sidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16`;
+    } else if (menuPosition === 'right') {
+      classes += ` ${sidebarCollapsed ? 'mr-16' : 'mr-64'} mt-16`;
+    } else if (menuPosition === 'top') {
+      classes += ' mt-32';
+    } else if (menuPosition === 'bottom') {
+      classes += ' mt-16 mb-20';
+    }
+    
+    if (detailPanel.type) {
+      classes += ' mr-96';
+    }
+    
+    return classes;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header workspace="Моё пространство" onCreateClick={handleCreate} />
-      <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+      <Sidebar 
+        activeSection={activeSection} 
+        onSectionChange={setActiveSection}
+        position={menuPosition}
+        collapsed={sidebarCollapsed}
+      />
       
-      <main className={`${sidebarCollapsed ? 'ml-16' : 'ml-64'} mt-16 p-6 transition-all ${detailPanel.type ? 'mr-96' : 'mr-0'}`}>
+      <main className={getMainClassName()}>
         <div className="animate-fade-in">{renderSection()}</div>
       </main>
 
