@@ -126,9 +126,9 @@ const SettingsSection = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 max-w-5xl mx-auto">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Настройки внешнего вида</h2>
+        <h2 className="text-3xl font-bold mb-2">Настройки внешнего вида</h2>
         <p className="text-muted-foreground">Персонализируйте интерфейс под свои предпочтения</p>
       </div>
 
