@@ -6,6 +6,7 @@ import NotesSection from '@/components/workspace/NotesSection';
 import CRMSection from '@/components/workspace/CRMSection';
 import TimeSection from '@/components/workspace/TimeSection';
 import AnalyticsSection from '@/components/workspace/AnalyticsSection';
+import SettingsSection from '@/components/workspace/SettingsSection';
 import DetailPanel from '@/components/workspace/DetailPanel';
 import { toast } from 'sonner';
 
@@ -77,12 +78,7 @@ const Workspace = () => {
       case 'analytics':
         return <AnalyticsSection />;
       case 'settings':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-bold">Настройки пространства</h2>
-            <p className="text-muted-foreground mt-2">Раздел в разработке</p>
-          </div>
-        );
+        return <SettingsSection />;
       default:
         return <TasksSection onTaskClick={handleTaskClick} />;
     }

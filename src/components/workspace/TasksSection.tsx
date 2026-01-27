@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Icon from '@/components/ui/icon';
 import TaskCalendar from './TaskCalendar';
 import CreateTaskDialog from './CreateTaskDialog';
+import DayEfficiency from './DayEfficiency';
 import { toast } from 'sonner';
 
 type Task = {
@@ -180,6 +181,7 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
 
       {view === 'calendar' && (
         <>
+          <DayEfficiency tasks={calendarTasks} />
           <TaskCalendar
             onCreateTask={handleCreateTask}
             tasks={calendarTasks}
