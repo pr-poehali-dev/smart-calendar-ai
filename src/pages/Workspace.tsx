@@ -87,7 +87,17 @@ const Workspace = () => {
       case 'analytics':
         return <AnalyticsSection />;
       case 'settings':
-        return <SettingsSection />;
+        try {
+          return <SettingsSection />;
+        } catch (error) {
+          console.error('SettingsSection error:', error);
+          return (
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-bold">Настройки</h2>
+              <p className="text-red-500">Ошибка загрузки: {String(error)}</p>
+            </div>
+          );
+        }
       default:
         return <TasksSection onTaskClick={handleTaskClick} />;
     }

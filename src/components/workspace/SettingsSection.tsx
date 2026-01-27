@@ -90,6 +90,8 @@ const menuPositions: { id: MenuPosition; name: string; icon: string; description
 ];
 
 const SettingsSection = () => {
+  console.log('SettingsSection rendering');
+  
   const [selectedTheme, setSelectedTheme] = useState(() => {
     return localStorage.getItem('appTheme') || 'cosmic-purple';
   });

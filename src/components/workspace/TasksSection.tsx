@@ -7,6 +7,7 @@ import Icon from '@/components/ui/icon';
 import TaskCalendar from './TaskCalendar';
 import CreateTaskDialog from './CreateTaskDialog';
 import DayEfficiency from './DayEfficiency';
+import TaskActions from './TaskActions';
 import { toast } from 'sonner';
 
 type Task = {
@@ -214,7 +215,7 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
               <div
                 key={task.id}
                 onClick={() => onTaskClick(task)}
-                className="p-4 rounded-lg bg-muted/50 border border-border hover:border-primary cursor-pointer transition-all hover-scale"
+                className="group p-4 rounded-lg bg-muted/50 border border-border hover:border-primary cursor-pointer transition-all hover-scale"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1">
@@ -242,6 +243,19 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
                       </div>
                     </div>
                   </div>
+                  <TaskActions
+                    onComplete={() => {
+                      toast.success('Статус задачи изменён');
+                    }}
+                    onEdit={() => {
+                      toast.info('Редактирование задачи');
+                      onTaskClick(task);
+                    }}
+                    onReschedule={() => {
+                      toast.info('Выберите новую дату');
+                    }}
+                    isCompleted={task.status === 'done' || task.status === 'completed'}
+                  />
                 </div>
               </div>
             ))}
@@ -266,14 +280,28 @@ const TasksSection = ({ onTaskClick }: TasksSectionProps) => {
                 {tasks
                   .filter((task) => task.status === column.id)
                   .map((task) => (
-                    <Card key={task.id} onClick={() => onTaskClick(task)} className="p-4 hover:border-primary cursor-pointer transition-all hover-scale bg-card border-border">
+                    <Card key={task.id} onClick={() => onTaskClick(task)} className="group p-4 hover:border-primary cursor-pointer transition-all hover-scale bg-card border-border">
                       <div className="space-y-3">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="font-medium text-sm leading-tight">{task.title}</p>
+                          <p className="font-medium text-sm leading-tight flex-1">{task.title}</p>
                           <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
                             {task.priority === 'high' ? 'Высокий' : task.priority === 'medium' ? 'Средний' : 'Низкий'}
                           </Badge>
                         </div>
+                        
+                        <TaskActions
+                          onComplete={() => {
+                            toast.success('Статус задачи изменён');
+                          }}
+                          onEdit={() => {
+                            toast.info('Редактирование задачи');
+                            onTaskClick(task);
+                          }}
+                          onReschedule={() => {
+                            toast.info('Выберите новую дату');
+                          }}
+                          isCompleted={task.status === 'done'}
+                        />
 
                         <div className="flex flex-wrap gap-1">
                           {task.tags.map((tag) => (
